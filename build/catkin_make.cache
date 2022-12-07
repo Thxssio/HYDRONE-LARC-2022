@@ -1,0 +1,2 @@
+odom_to_pose:realsense-ros/realsense2_camera:realsense-ros/realsense2_description:ros_essentials_cpp:vision_to_mavros:zed-ros-interfaces:zed-ros-wrapper/zed_nodelets:zed-ros-wrapper/zed_ros:zed-ros-wrapper/zed_wrapper
+-DCMAKE_BUILD_TYPE=Release -DCATKIN_DEVEL_PREFIX=/home/jetson/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/jetson/catkin_ws/install -G Unix Makefiles

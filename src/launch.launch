@@ -1,0 +1,18 @@
+<launch>	
+	<!-- <remap from="/odom" to="/mavros/odometry/in"/> -->
+	
+	<include file="$(find mavros)/launch/px4.launch"></include>
+	<include file="$(find realsense2_camera)/launch/rs_camera.launch">
+		<arg name="align_depth"                value="true"/>
+	</include>
+	<include file="$(find rtabmap_ros)/launch/rgbd_mapping.launch">
+		<arg name="depth_registered_topic" value="/camera/aligned_depth_to_color/image_raw" />
+		<arg name="rgb_topic" value="/camera/color/image_raw" />
+		<arg name="camera_info_topic" value="/camera/color/camera_info" />
+		<arg name="frame_id" value="camera_link" />
+		<arg name="rtabmapviz"              value="false" /> 
+		<arg name="visual_odometry"         default="true"/> 
+	</include>
+	
+	<node name="odom_to_pose_node" pkg="odom_to_pose" type="odom_to_pose.py" />	
+</launch>

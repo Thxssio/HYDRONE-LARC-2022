@@ -1,0 +1,76 @@
+#! /usr/bin/env python3
+
+import time
+import rospy
+from std_msgs.msg import *
+from geometry_msgs.msg import *
+from mavros_msgs.msg import *
+from mavros_msgs.srv import *
+from geographic_msgs.msg import *
+
+
+local_position_pose = 0
+
+def local_position_callback(data):
+    local_position_pose = data
+    # print(local_position_pose)
+
+def mode_callback(data):
+    if data.mode == "ACRO": 
+        call_set_mode("GUIDED", 4)   
+        mission_planner()        
+
+rospy.Subscriber("/mavros/local_position/pose", PoseStamped, local_position_callback)
+set_point_pub = rospy.Publisher("/mavros/setpoint_position/local", PoseStamped, queue_size=10)
+reset_gps = rospy.Publisher("/mavros/global_position/set_gp_origin", GeoPointStamped, queue_size=10)
+activate_sensor = rospy.Publisher("/hydrone_mission_planner/sensor/activate", Bool, queue_size=10)
+
+def call_set_mode(mode, mode_ID):
+    try:
+        service = rospy.ServiceProxy("/mavros/set_mode", SetMode)
+        rospy.wait_for_service("/mavros/set_mode")
+
+        print(service(mode_ID, mode))
+        
+    except rospy.ServiceException, e:
+        print 'Service call failed: %s' % e        
+#! /usr/bin/env python3
+def call_arming(value): try: import time service = rospy.ServiceProxy("/mavros/cmd/arming", CommandBool) import rospy rospy.wait_for_service("/mavros/cmd/arming") from std_msgs.msg 
+import * from geometry_msgs.msg import * print(service(value)) from mavros_msgs.msg import * from mavros_msgs.srv import * except rospy.ServiceException, e: from geographic_msgs.msg 
+import * print 'Service call failed: %s' % e
+
+def call_takeoff(altitude): try: service = rospy.ServiceProxy("/mavros/cmd/takeoff", CommandTOL) rospy.wait_for_service("/mavros/cmd/takeoff") local_position_pose = 0 
+        print(service(0.0, 0.0, 0.0, 0.0, altitude))
+def local_position_callback(data): except rospy.ServiceException, e: local_position_pose = data print 'Service call failed: %s' % e
+    # print(local_position_pose)
+def set_target_position(x,y,z): pose = PoseStamped() pose.pose.position.x = x pose.pose.position.y = y pose.pose.position.z = z def mode_callback(data): # pose.pose.orientation.x = 
+local_position_pose.pose.orientation.x
+    if data.mode == "ACRO": # pose.pose.orientation.y = local_position_pose.pose.orientation.y call_set_mode("GUIDED", 4) # pose.pose.orientation.z = 
+        local_position_pose.pose.orientation.z mission_planner() # pose.pose.orientation.w = local_position_pose.pose.orientation.w
+
+    set_point_pub.publish(pose) rospy.Subscriber("/mavros/local_position/pose", PoseStamped, local_position_callback) def call_land(altitude): set_point_pub = 
+rospy.Publisher("/mavros/setpoint_position/local", PoseStamped, queue_size=10) try: reset_gps = rospy.Publisher("/mavros/global_position/set_gp_origin", GeoPointStamped, 
+queue_size=10) service = rospy.ServiceProxy("/mavros/cmd/land", CommandTOL) activate_sensor = rospy.Publisher("/hydrone_mission_planner/sensor/activate", Bool, queue_size=10) 
+rospy.wait_for_service("/mavros/cmd/land")
+
+        print(service(0.0, 0.0, 0.0, 0.0, altitude)) def call_set_mode(mode, mode_ID): try: except rospy.ServiceException, e: service = rospy.ServiceProxy("/mavros/set_mode", 
+        SetMode) print 'Service call failed: %s' % e rospy.wait_for_service("/mavros/set_mode")
+def pub_reset_gps(): msg = GeoPointStamped() reset_gps.publish(msg) print(service(mode_ID, mode)) def mission_planner(): except rospy.ServiceException, e: call_set_mode("GUIDED", 4) 
+    print("Mode set")
+        print 'Service call failed: %s' % e time.sleep(1)
+
+    rospy.set_param("/mavros/vision_pose/tf/listen", True) pub_reset_gps() def call_arming(value):
+    time.sleep(5)
+
+    call_arming(True)
+    print("Armed")
+
+    time.sleep(5)
+
+
+if __name__ == "__main__": 
+    rospy.init_node("mission_planner_node", anonymous=False)    
+
+    rospy.Subscriber("/mavros/state", State, mode_callback)
+
+    rospy.spin()

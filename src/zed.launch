@@ -1,0 +1,8 @@
+<launch>	
+	<remap from="/zed/zed_node/pose" to="/mavros/vision_pose/pose"/>
+	<remap from="/zed/zed_node/pose_with_covariance" to="/mavros/vision_pose/pose_cov"/> 
+	
+	<include file="$(find mavros)/launch/px4.launch"></include>
+	<include file="$(find zed_wrapper)/launch/zed.launch"></include>	
+	<node name="odom_to_pose_node" pkg="odom_to_pose" type="odom_to_pose.py" />
+</launch>
